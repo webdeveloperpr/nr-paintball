@@ -1,0 +1,19 @@
+type Team @model {
+  id: ID!
+  name: String!
+}
+
+type Field @model {
+  id: ID!
+  name: String!
+}
+
+type Game @model {
+  id: ID!
+  homeId: ID!
+  awayId: ID!
+  fieldId: ID!
+  field: Field @connection(fields: ["fieldId"])
+  home: Team @connection(fields: ["homeId"])
+  away: Team @connection(fields: ["awayId"])
+}

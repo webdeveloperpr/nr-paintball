@@ -1,0 +1,15 @@
+{
+    "node": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-nr-paintball-node-210046-authRole",
+            "UnauthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-210046-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-210046-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-nr-paintball-node-210046-deployment",
+            "UnauthRoleName": "amplify-nr-paintball-node-210046-unauthRole",
+            "StackName": "amplify-nr-paintball-node-210046",
+            "StackId": "arn:aws:cloudformation:us-east-1:270306114704:stack/amplify-nr-paintball-node-210046/2394a2a0-59ce-11ea-bcc2-0eac0ccc6c9d",
+            "AmplifyAppId": "d33lokpvb16l4j"
+        }
+    }
+}
