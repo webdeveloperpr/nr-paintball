@@ -1,4 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
+// Styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,14 +22,6 @@ import AdminFields from './pages/admin/Fields';
 
 // User Pages
 import Field from './pages/user/Field';
-
-import awsconfig from './aws-exports';
-import API, { graphqlOperation } from '@aws-amplify/api';
-import PubSub from '@aws-amplify/pubsub';
-import debounce from 'lodash.debounce';
-// Styles
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 
 // Mutations
 import {
@@ -72,6 +67,14 @@ import {
 
 } from './graphql/subscriptions';
 
+import debounce from 'lodash.debounce';
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+import { Authenticator } from 'aws-amplify-react/lib/Auth';
+import API, { graphqlOperation } from '@aws-amplify/api';
+import PubSub from '@aws-amplify/pubsub';
+
+Amplify.configure(awsconfig);
 API.configure(awsconfig);
 PubSub.configure(awsconfig);
 
@@ -228,6 +231,12 @@ const clickBurger = () => {
   }
 };
 
+// const checkUser = async () => {
+//   console.log('currentUserInfo', await Auth.currentUserInfo());
+//   console.log('currentUserPoolUser', await Auth.currentUserPoolUser());
+//   console.log('user', await Auth.currentAuthenticatedUser());
+// };
+
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -367,6 +376,7 @@ function App() {
                     </Nav.Link>
                 )
               })}
+              <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link>
               <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
               <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
               <Nav.Link onClick={clickBurger} as={Link} to="/add-fields">Add Field</Nav.Link>
@@ -374,6 +384,27 @@ function App() {
           </Navbar.Collapse>
         </Navbar>
         <Switch>
+
+          <Route exact path="/sign-in">
+            {/* <button onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}>
+              Sign in with Facebook
+            </button>
+
+            <button onClick={() => Auth.federatedSignIn()}>
+              Sign in with Email
+            </button>
+
+            <button onClick={checkUser}>
+              Check User
+            </button> */}
+
+            <Authenticator
+              federated={{
+                facebook_app_id: '1362689763902038'
+              }}
+            />
+
+          </Route>
 
           {state.fields.map(field => {
             const route = `/${field.name}`;

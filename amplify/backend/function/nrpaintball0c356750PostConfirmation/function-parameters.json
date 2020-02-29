@@ -1,0 +1,14 @@
+{
+    "trigger": true,
+    "modules": [
+        "add-to-group"
+    ],
+    "parentResource": "nrpaintball0c356750",
+    "functionName": "nrpaintball0c356750PostConfirmation",
+    "parentStack": "auth",
+    "triggerEnvs": "[]",
+    "triggerTemplate": "PostConfirmation.json.ejs",
+    "roleName": "nrpaintball0c356750PostConfirmation",
+    "skipEdit": true,
+    "resourceName": "nrpaintball0c356750PostConfirmation"
+}

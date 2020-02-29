@@ -10,6 +10,23 @@
             "StackName": "amplify-nr-paintball-node-210046",
             "StackId": "arn:aws:cloudformation:us-east-1:270306114704:stack/amplify-nr-paintball-node-210046/2394a2a0-59ce-11ea-bcc2-0eac0ccc6c9d",
             "AmplifyAppId": "d33lokpvb16l4j"
+        },
+        "categories": {
+            "function": {
+                "nrpaintball0c356750CustomMessage": {
+                    "REDIRECTURL": "https://nrpaintball.app",
+                    "EMAILSUBJECT": "nr-paintball account activation",
+                    "EMAILMESSAGE": "Click on the confirmation link to confirm and activate your account."
+                },
+                "nrpaintball0c356750PostConfirmation": {
+                    "GROUP": "players"
+                }
+            },
+            "auth": {
+                "nrpaintball0c356750": {
+                    "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"1362689763902038\",\"client_secret\":\"554c6cd9cf75c45e67bc178cd2574144\"}]"
+                }
+            }
         }
     }
 }

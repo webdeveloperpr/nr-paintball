@@ -1,0 +1,14 @@
+{
+    "trigger": true,
+    "modules": [
+        "verification-link"
+    ],
+    "parentResource": "nrpaintball0c356750",
+    "functionName": "nrpaintball0c356750CustomMessage",
+    "parentStack": "auth",
+    "triggerEnvs": "[{\"key\":\"RESOURCENAME\",\"value\":\"resourceName\"}]",
+    "triggerTemplate": "CustomMessage.json.ejs",
+    "roleName": "nrpaintball0c356750CustomMessage",
+    "skipEdit": true,
+    "resourceName": "nrpaintball0c356750CustomMessage"
+}
