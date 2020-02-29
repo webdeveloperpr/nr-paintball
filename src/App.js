@@ -167,11 +167,6 @@ async function deleteGameAction(id) {
   await API.graphql(graphqlOperation(deleteGame, { input: { id } }));
 }
 
-// AUTH ACTIONS
-const signInAction = async () => {
-  await Auth.federatedSignIn({ provider: 'Facebook' });
-};
-
 // Reducers
 const reducer = (state, action) => {
   switch (action.type) {
@@ -476,7 +471,7 @@ function App() {
           </Route>
 
           <Route exact path="/sign-in">
-            <button onClick={signInAction}>
+            <button onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}>
               Sign in with Facebook
             </button>
 

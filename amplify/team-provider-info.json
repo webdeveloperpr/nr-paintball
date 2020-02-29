@@ -23,7 +23,9 @@
                 }
             },
             "auth": {
-                "nrpaintball0c356750": {}
+                "nrpaintball8869a290": {
+                    "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"1362689763902038\",\"client_secret\":\"554c6cd9cf75c45e67bc178cd2574144\"}]"
+                }
             }
         }
     }
