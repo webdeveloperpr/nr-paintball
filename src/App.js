@@ -21,6 +21,7 @@ import AdminTeams from './pages/admin/Teams';
 import AdminFields from './pages/admin/Fields';
 
 import { Auth } from 'aws-amplify';
+import { withFederated } from 'aws-amplify-react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 
 // Styles
@@ -274,6 +275,16 @@ const HomeRoute = ({ children, fields, ...props }) => {
   return <Route {...props} render={({ location }) => !fieldName ? null : <Redirect to={{ pathname: `/${fieldName}`, state: { from: location } }} />} />;
 };
 
+
+const SignIn = withFederated((props) => (
+  <div>
+    <button onClick={props.facebookSignIn}>
+      Sign In!
+    </button>
+  </div>
+));
+
+
 function App() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -471,13 +482,7 @@ function App() {
           </Route>
 
           <Route exact path="/sign-in">
-            <button onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}>
-              Sign in with Facebook
-            </button>
-
-            <button onClick={() => Auth.federatedSignIn()}>
-              Sign in with Email
-            </button>
+            <SignIn federated={{ facebook_app_id: '1362689763902038' }} />
           </Route>
         </Switch>
       </Router>

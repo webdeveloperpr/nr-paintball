@@ -9,7 +9,7 @@
 					"defaultAuthentication": {
 						"authenticationType": "API_KEY",
 						"apiKeyConfig": {
-							"description": "db key",
+							"description": "gql api key",
 							"apiKeyExpirationDays": "365"
 						}
 					}
@@ -23,20 +23,8 @@
 			"providerPlugin": "awscloudformation"
 		}
 	},
-	"function": {
-		"nrpaintball0c356750CustomMessage": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true
-		},
-		"nrpaintball0c356750PostConfirmation": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true
-		}
-	},
 	"auth": {
-		"nrpaintball8869a290": {
+		"nrpaintball95bf70f5": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": [],

@@ -1,29 +1,19 @@
 {
     "node": {
         "awscloudformation": {
-            "AuthRoleName": "amplify-nr-paintball-node-210046-authRole",
-            "UnauthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-210046-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-210046-authRole",
+            "AuthRoleName": "amplify-nr-paintball-node-172732-authRole",
+            "UnauthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-172732-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::270306114704:role/amplify-nr-paintball-node-172732-authRole",
             "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-nr-paintball-node-210046-deployment",
-            "UnauthRoleName": "amplify-nr-paintball-node-210046-unauthRole",
-            "StackName": "amplify-nr-paintball-node-210046",
-            "StackId": "arn:aws:cloudformation:us-east-1:270306114704:stack/amplify-nr-paintball-node-210046/2394a2a0-59ce-11ea-bcc2-0eac0ccc6c9d",
-            "AmplifyAppId": "d33lokpvb16l4j"
+            "DeploymentBucketName": "amplify-nr-paintball-node-172732-deployment",
+            "UnauthRoleName": "amplify-nr-paintball-node-172732-unauthRole",
+            "StackName": "amplify-nr-paintball-node-172732",
+            "StackId": "arn:aws:cloudformation:us-east-1:270306114704:stack/amplify-nr-paintball-node-172732/af4b53a0-5b42-11ea-9cca-0ea47a628cf7",
+            "AmplifyAppId": "d1wah8orl6xdga"
         },
         "categories": {
-            "function": {
-                "nrpaintball0c356750CustomMessage": {
-                    "REDIRECTURL": "https://nrpaintball.app",
-                    "EMAILSUBJECT": "nr-paintball account activation",
-                    "EMAILMESSAGE": "Click on the confirmation link to confirm and activate your account."
-                },
-                "nrpaintball0c356750PostConfirmation": {
-                    "GROUP": "players"
-                }
-            },
             "auth": {
-                "nrpaintball8869a290": {
+                "nrpaintball95bf70f5": {
                     "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"1362689763902038\",\"client_secret\":\"554c6cd9cf75c45e67bc178cd2574144\"}]"
                 }
             }

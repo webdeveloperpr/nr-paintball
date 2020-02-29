@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "nrpaintball8869a290_identitypool_8869a290",
+    "identityPoolName": "nrpaintball95bf70f5_identitypool_95bf70f5",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "nrpain8869a290",
-    "userPoolName": "nrpaintball8869a290_userpool_8869a290",
+    "resourceNameTruncated": "nrpain95bf70f5",
+    "userPoolName": "nrpaintball95bf70f5_userpool_95bf70f5",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,9 +28,9 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "nrpain8869a290_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "nrpain95bf70f5_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "resourceName": "nrpaintball8869a290",
+    "resourceName": "nrpaintball95bf70f5",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -46,12 +46,12 @@
     },
     "useDefault": "defaultSocial",
     "hostedUI": true,
-    "hostedUIDomainName": "nrpaintball8869a290-8869a290",
+    "hostedUIDomainName": "nrpaintball95bf70f5-95bf70f5",
     "authProvidersUserPool": [
         "Facebook"
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://nrpaintball.app/\"],\"LogoutURLs\":[\"https://nrpaintball.app/\"]}",
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://localhost:3000/\",\"https://nrpaintball.app/\"],\"LogoutURLs\":[\"https://localhost:3000/\",\"https://nrpaintball.app/\"]}",
     "userPoolGroupList": [],
     "dependsOn": []
 }
