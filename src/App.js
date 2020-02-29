@@ -1,10 +1,11 @@
 import React, { useEffect, useReducer } from 'react';
+import { pathOr, includes } from 'ramda';
 import debounce from 'lodash.debounce';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
 } from 'react-router-dom';
 import './App.css';
 import {
@@ -18,7 +19,7 @@ import AdminGames from './pages/admin/Games';
 import AdminTeams from './pages/admin/Teams';
 import AdminFields from './pages/admin/Fields';
 
-import { Authenticator } from 'aws-amplify-react/lib/Auth';
+import { Auth } from 'aws-amplify';
 import API, { graphqlOperation } from '@aws-amplify/api';
 
 // Styles
@@ -73,8 +74,6 @@ import {
 
 } from './graphql/subscriptions';
 
-
-
 // GET DATA
 const QUERY = 'QUERY';
 
@@ -93,7 +92,20 @@ const CREATE_GAME = 'CREATE_GAME';
 const UPDATE_GAME = 'UPDATE_GAME';
 const DELETE_GAME = 'DELETE_GAME';
 
+// AUTH
+const AUTH_LOGIN = 'AUTH_LOGIN';
+const AUTH_LOGOUT = 'AUTH_LOGOUT';
+
 const initialState = {
+  user: {
+    id: '',
+    username: '',
+    email: '',
+    groups: [],
+    idLoggedIn: false,
+    isRef: false,
+    isAdmin: false,
+  },
   teams: [],
   fields: [],
   games: [],
@@ -154,17 +166,34 @@ async function deleteGameAction(id) {
   await API.graphql(graphqlOperation(deleteGame, { input: { id } }));
 }
 
+// AUTH ACTIONS
+
+const signInAction = async () => {
+  await Auth.federatedSignIn({ provider: 'Facebook' });
+};
+
 // Reducers
 const reducer = (state, action) => {
   switch (action.type) {
     case QUERY:
       return {
         ...state,
+        user: action.user,
         teams: action.teams,
         fields: action.fields,
         games: action.games,
       };
-
+    // AUTH
+    case AUTH_LOGIN:
+      return {
+        ...state,
+        auth: action.auth,
+      }
+    case AUTH_LOGOUT:
+      return {
+        ...state,
+        auth: { ...initialState.user },
+      }
     // TEAM CASE
     case CREATE_TEAM:
       return {
@@ -228,23 +257,36 @@ const clickBurger = () => {
   }
 };
 
-// const checkUser = async () => {
-//   console.log('currentUserInfo', await Auth.currentUserInfo());
-//   console.log('currentUserPoolUser', await Auth.currentUserPoolUser());
-//   console.log('user', await Auth.currentAuthenticatedUser());
-// };
+const getUser = async () => {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    return {
+      id: pathOr('', ['id'], user),
+      username: pathOr('', ['username'], user),
+      email: pathOr('', ['attributes', 'email'], user),
+      groups: pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user),
+      isLoggedIn: !!pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user).length,
+      isRef: includes('refs', pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user)),
+      isAdmin: includes('admin', pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user)),
+    };
+  } catch (err) {
+    return {}
+  }
+};
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [state, dispatch] = useReducer(reducer, initialState);
   useEffect(() => {
     async function getData() {
       const teamData = await API.graphql(graphqlOperation(listTeams));
       const fieldData = await API.graphql(graphqlOperation(listFields));
       const gameData = await API.graphql(graphqlOperation(listGames));
+      const user = await getUser();
 
       dispatch({
         type: QUERY,
+        user: user,
         teams: teamData.data.listTeams.items,
         fields: fieldData.data.listFields.items,
         games: gameData.data.listGames.items,
@@ -340,6 +382,7 @@ function App() {
     }
   }, []);
 
+
   return (
     <Container fluid>
       <Router>
@@ -363,51 +406,31 @@ function App() {
               {state.fields.map(field => {
                 const route = '/' + field.name;
                 return (
-                  <Nav.Link
-                    key={field.id}
-                    onClick={clickBurger}
-                    as={Link}
-                    to={route}>
-                    {field.name}
+                  <Nav.Link key={field.id} onClick={clickBurger} as={Link} to={route}> {field.name}
                     Field
-                    </Nav.Link>
+                  </Nav.Link>
                 )
               })}
-              <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link>
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-fields">Add Field</Nav.Link>
+
+              {state.user.isLoggedIn ? null : <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link>}
+              {state.user.isRef || state.user.isAdmin
+                ? (
+                  <>
+                    <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
+                    <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
+                    <Nav.Link onClick={clickBurger} as={Link} to="/add-fields">Add Field</Nav.Link>
+                    <Nav.Link onClick={() => Auth.signOut().then(data => console.log(data)).catch(err => console.log(err))} as={Link} to="/">Sign Out</Nav.Link>
+                  </>
+                )
+                : null
+              }
             </Nav>
           </Navbar.Collapse>
         </Navbar>
         <Switch>
-
-          <Route exact path="/sign-in">
-            {/* <button onClick={() => Auth.federatedSignIn({ provider: 'Facebook' })}>
-              Sign in with Facebook
-            </button>
-
-            <button onClick={() => Auth.federatedSignIn()}>
-              Sign in with Email
-            </button>
-
-            <button onClick={checkUser}>
-              Check User
-            </button> */}
-
-            <Authenticator
-              federated={{
-                facebook_app_id: '1362689763902038'
-              }}
-            />
-
-          </Route>
-
           {state.fields.map(field => {
-            const route = `/${field.name}`;
-            console.log('route', route);
             return (
-              <Route exact path={route} key={field.id}>
+              <Route exact path={`/${field.name}`} key={field.id}>
                 <Field
                   fieldName={field.name}
                   games={state.games.filter(game => game.fieldId === field.id)}
@@ -443,6 +466,16 @@ function App() {
               deleteTeam={deleteTeamAction}
               teams={state.teams}
             />
+          </Route>
+
+          <Route exact path="/sign-in">
+            <button onClick={signInAction}>
+              Sign in with Facebook
+            </button>
+
+            <button onClick={() => Auth.federatedSignIn()}>
+              Sign in with Email
+            </button>
           </Route>
         </Switch>
       </Router>
