@@ -68,12 +68,12 @@ import {
 } from './graphql/subscriptions';
 
 import debounce from 'lodash.debounce';
-import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
 import { Authenticator } from 'aws-amplify-react/lib/Auth';
+import Amplify from 'aws-amplify';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 
+import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 API.configure(awsconfig);
 PubSub.configure(awsconfig);
