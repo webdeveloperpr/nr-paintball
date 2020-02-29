@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
   Link
-} from 'react-router-dom';
+} from "react-router-dom";
 import './App.css';
 import {
   Navbar,
@@ -15,18 +15,14 @@ import {
 // Admin Pages
 import AdminGames from './pages/admin/Games';
 import AdminTeams from './pages/admin/Teams';
-import AdminFields from './pages/admin/Fields';
 
 // User Pages
 import Field from './pages/user/Field';
+import UserTeams from './pages/user/Teams';
 
-import awsconfig from './aws-exports';
+
 import API, { graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
-import debounce from 'lodash.debounce';
-// Styles
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 
 // Mutations
 import {
@@ -72,6 +68,9 @@ import {
 
 } from './graphql/subscriptions';
 
+import awsconfig from './aws-exports';
+import './App.css';
+
 API.configure(awsconfig);
 PubSub.configure(awsconfig);
 
@@ -93,68 +92,13 @@ const CREATE_GAME = 'CREATE_GAME';
 const UPDATE_GAME = 'UPDATE_GAME';
 const DELETE_GAME = 'DELETE_GAME';
 
+
 const initialState = {
   teams: [],
   fields: [],
   games: [],
 };
 
-// TEAM ACTIONS
-async function createTeamAction() {
-  const team = { name: ' ' };
-  await API.graphql(graphqlOperation(createTeam, { input: team }));
-}
-
-const updateTeamAction = (cb => dispatch => (id, name) => {
-  const team = { id, name };
-  dispatch({ type: UPDATE_TEAM, team });
-  cb(team);
-})(debounce(async (team) => await API.graphql(graphqlOperation(updateTeam, { input: team })), 2000))
-
-async function deleteTeamAction(id) {
-  await API.graphql(graphqlOperation(deleteTeam, { input: { id } }));
-}
-
-// FIELD ACTIONS
-async function createFieldAction() {
-  const field = { name: ' ' };
-  await API.graphql(graphqlOperation(createField, { input: field }));
-}
-
-const updateFieldAction = (cb => dispatch => (id, name) => {
-  const field = { id, name };
-  console.log(field);
-  dispatch({ type: UPDATE_FIELD, field });
-  cb(field);
-})(debounce(async (field) => await API.graphql(graphqlOperation(updateField, { input: field })), 1500))
-
-async function deleteFieldAction(id) {
-  await API.graphql(graphqlOperation(deleteField, { input: { id } }));
-}
-
-// GAME ACTIONS
-async function createGameAction({ fieldId, homeId, awayId }) {
-  const game = {
-    fieldId,
-    homeId,
-    awayId,
-  };
-  await API.graphql(graphqlOperation(createGame, { input: game }));
-}
-
-async function updateGameAction(id, props) {
-  const game = {
-    id,
-    ...props,
-  }
-  await API.graphql(graphqlOperation(updateGame, { input: game }));
-}
-
-async function deleteGameAction(id) {
-  await API.graphql(graphqlOperation(deleteGame, { input: { id } }));
-}
-
-// Reducers
 const reducer = (state, action) => {
   switch (action.type) {
     case QUERY:
@@ -171,11 +115,6 @@ const reducer = (state, action) => {
         ...state,
         teams: [...state.teams, action.team]
       }
-    case UPDATE_TEAM:
-      return {
-        ...state,
-        teams: [...state.teams].map(team => team.id === action.team.id ? action.team : team)
-      }
     case DELETE_TEAM:
       return {
         ...state,
@@ -188,11 +127,6 @@ const reducer = (state, action) => {
         ...state,
         fields: [...state.fields, action.field]
       }
-    case UPDATE_FIELD:
-      return {
-        ...state,
-        fields: [...state.fields].map(field => field.id === action.field.id ? action.field : field)
-      }
     case DELETE_FIELD:
       return {
         ...state,
@@ -203,12 +137,7 @@ const reducer = (state, action) => {
     case CREATE_GAME:
       return {
         ...state,
-        games: [...state.games, action.game],
-      }
-    case UPDATE_GAME:
-      return {
-        ...state,
-        games: [...state.games].map(game => game.id === action.game.id ? action.game : game),
+        games: [...state.games, action.game]
       }
     case DELETE_GAME:
       return {
@@ -221,12 +150,43 @@ const reducer = (state, action) => {
   }
 };
 
-const clickBurger = () => {
-  const burger = document.querySelector('.navbar-toggler');
-  if (burger && burger.offsetWidth) {
-    burger.click();
-  }
-};
+// TEAM ACTIONS
+async function createTeamAction(name) {
+  const team = { name };
+  await API.graphql(graphqlOperation(createTeam, { input: team }));
+}
+
+async function deleteTeamAction(id) {
+  await API.graphql(graphqlOperation(deleteTeam, { input: { id } }));
+}
+
+// FIELD ACTIONS
+async function createFieldAction(name) {
+  const field = { name };
+  await API.graphql(graphqlOperation(createField, { input: field }));
+}
+
+async function deleteFieldAction(id) {
+  await API.graphql(graphqlOperation(deleteField, { input: { id } }));
+}
+
+// GAME ACTIONS
+async function createGameAction({ fieldId, homeId, awayId }) {
+  const game = {
+    fieldId,
+    homeId,
+    awayId,
+  };
+  await API.graphql(graphqlOperation(createGame, { input: game }));
+}
+
+async function updateGameAction(props) {
+  await API.graphql(graphqlOperation(updateGame, { input: props }));
+}
+
+async function deleteGameAction(id) {
+  await API.graphql(graphqlOperation(deleteGame, { input: { id } }));
+}
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -334,91 +294,117 @@ function App() {
     }
   }, []);
 
+  console.log(state.games);
+
   return (
-    <Container fluid>
-      <Router>
-        <Navbar
-          bg="dark"
-          variant="dark"
-          sticky="top"
-          expand="lg"
-          className="mb-2"
-          style={{ margin: '0 -15px' }}
-        >
-          <Navbar.Brand
-            as={Link}
-            to={state.fields.length ? '/' + state.fields[0].name : '/'}
-          >
-            NR-Paintball
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto">
-              {state.fields.map(field => {
-                const route = '/' + field.name;
-                return (
-                  <Nav.Link
-                    key={field.id}
-                    onClick={clickBurger}
-                    as={Link}
-                    to={route}>
-                    {field.name}
-                    Field
-                    </Nav.Link>
-                )
-              })}
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
-              <Nav.Link onClick={clickBurger} as={Link} to="/add-fields">Add Field</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-        <Switch>
+    <div className="App">
+      <div>
+        <h1>Teams</h1>
+        <input type="text" onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            e.preventDefault();
+            createTeamAction(e.target.value);
+            e.target.value = '';
+          }
+        }} />
+        <div>
+          {state.teams.length > 0
+            ? state.teams.map((team) => (
+              <div key={team.id}>
+                <p >{team.name} {` `} <span onClick={() => deleteTeamAction(team.id)}> X </span></p>
+              </div>
+            ))
+            : <p>Add some teams!</p>
+          }
+        </div>
+      </div>
 
-          {state.fields.map(field => {
-            const route = `/${field.name}`;
-            console.log('route', route);
-            return (
-              <Route exact path={route} key={field.id}>
-                <Field
-                  fieldName={field.name}
-                  games={state.games.filter(game => game.fieldId === field.id)}
-                />
-              </Route>
+      <div>
+        <h1>Fields</h1>
+        <input type="text" onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            e.preventDefault();
+            createFieldAction(e.target.value);
+            e.target.value = '';
+          }
+        }} />
+        <div>
+          {state.fields.length > 0
+            ? state.fields.map((field) => (
+              <div key={field.id}>
+                <p >{field.name} {` `} <span onClick={() => deleteFieldAction(field.id)}> X </span></p>
+              </div>
+            ))
+            : <p>Add some fields!</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <h1>Games</h1>
+        <div>
+          {state.teams.length && state.fields.length
+            ? (
+              <button
+                onClick={() => createGameAction({
+                  fieldId: state.fields[0].id,
+                  awayId: state.teams[0].id,
+                  homeId: state.teams[0].id,
+                })}
+              >
+                Add some games!
+              </button>
             )
-          })}
+            : ''
+          }
+          {state.games.length > 0
+            ? state.games.map((game) => (
+              <div key={game.id}>
+                {/* Field Selector */}
+                <select
+                  value={game.fieldId}
+                  onChange={e => updateGameAction({
+                    fieldId: e.target.value,
+                    id: game.id
+                  })}
+                >
+                  {state.fields.map(field => (<option key={field.id} value={field.id}>{field.name}</option>))}
+                </select>
 
-          <Route exact path="/add-games">
-            <AdminGames
-              createGame={createGameAction}
-              updateGame={updateGameAction}
-              deleteGame={deleteGameAction}
-              games={state.games}
-              teams={state.teams}
-              fields={state.fields}
-            />
-          </Route>
+                {/* Home Team Selector */}
+                <select
+                  value={game.homeId}
+                  onChange={e => {
+                    updateGameAction({
+                      id: game.id,
+                      homeId: e.target.value,
+                    })
+                  }}
+                >
+                  {state.teams.map(team => (<option key={team.id} value={team.id}>{team.name}</option>))}
+                </select>
 
-          <Route exact path="/add-fields">
-            <AdminFields
-              createField={createFieldAction}
-              updateField={updateFieldAction(dispatch)}
-              deleteField={deleteFieldAction}
-              fields={state.fields}
-            />
-          </Route>
+                {/* Away Team Selector */}
+                <select
+                  value={game.awayId}
+                  onChange={e => {
+                    updateGameAction({
+                      id: game.id,
+                      awayId: e.target.value,
+                    })
+                  }}
+                >
+                  {state.teams.map(team => (<option key={team.id} value={team.id}>{team.name}</option>))}
+                </select>
 
-          <Route exact path="/add-teams">
-            <AdminTeams
-              createTeam={createTeamAction}
-              updateTeam={updateTeamAction(dispatch)}
-              deleteTeam={deleteTeamAction}
-              teams={state.teams}
-            />
-          </Route>
-        </Switch>
-      </Router>
-    </Container>
+                <p ><span onClick={() => deleteGameAction(game.id)}> X </span></p>
+              </div>
+            ))
+            : <p>Add Some Games!</p>
+          }
+        </div>
+      </div>
+    </div>
   );
 }
 
