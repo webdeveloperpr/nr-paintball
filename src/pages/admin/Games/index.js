@@ -6,6 +6,14 @@ import {
   Form,
   Button,
 } from 'react-bootstrap';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import { map, nth, __, pick } from 'ramda';
+
+const pickIdx = (arr, indexes) => map(nth(__, arr), indexes)
+
+const SortableItem = SortableElement((props) => <tr>{props.children}</tr>);
+
+const SortableList = SortableContainer((props) => <tbody>{props.children}</tbody>);
 
 const TeamSelectInput = (props) => {
   const { teams, game, teamId, updateGame, propName } = props;
@@ -32,6 +40,17 @@ class Games extends React.Component {
     return ''
   };
 
+  swap = (game1, game2) => {
+    this.props.updateGame(game2.id, { ...pick(['homeId', 'awayId'], game1) });
+    this.props.updateGame(game1.id, { ...pick(['homeId', 'awayId'], game2) });
+  };
+
+  onSortEnd = (items, swap) => ({ newIndex, oldIndex }) => {
+    const [before, after] = pickIdx(items, [newIndex, oldIndex])
+    swap(before, after);
+    console.log(before, after);
+  }
+
   render() {
     if (!this.props.fields.length) return 'Add a field!'
 
@@ -57,12 +76,15 @@ class Games extends React.Component {
                     <th></th>
                   </tr>
                 </thead>
-                <tbody>
-                  {this.props.games
-                    .filter(game => game.fieldId === fieldId)
+
+                <SortableList onSortEnd={this.onSortEnd(this.props.games.filter(game => game.fieldId === fieldId), this.swap)}>
+                  {this.props.games.filter(game => game.fieldId === fieldId)
                     .map((game, i) => {
                       return (
-                        <tr key={i}>
+                        <SortableItem
+                          key={game.id}
+                          index={i}
+                        >
                           <td>{i + 1}</td>
                           <td>
                             <TeamSelectInput
@@ -93,10 +115,10 @@ class Games extends React.Component {
                             >
                               x
                         </Button></td>
-                        </tr>
+                        </SortableItem>
                       )
                     })}
-                </tbody>
+                </SortableList>
               </Table>
               <Button
                 onClick={() => this.props.createGame({

@@ -44,17 +44,12 @@
             "Arn"
         ]
     },
-    "useDefault": "defaultSocial",
+    "useDefault": "default",
     "hostedUI": true,
     "usernameAttributes": [
         "email"
     ],
     "triggers": "{\"CustomMessage\":[\"verification-link\"],\"PostConfirmation\":[\"add-to-group\"]}",
-    "hostedUIDomainName": "nr-paintball",
-    "authProvidersUserPool": [
-        "Facebook"
-    ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}}]",
     "userPoolGroupList": [],
     "verificationBucketName": "nrpaintball0c356750verificationbucket",
     "parentStack": {
@@ -82,6 +77,5 @@
                 "Name"
             ]
         }
-    ],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://nrpaintball.app/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://nrpaintball.app/\"]}"
+    ]
 }
