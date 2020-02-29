@@ -122,16 +122,10 @@ Parameters:
       
   hostedUIProviderMeta:
     Type: String
-              
-  hostedUIProviderCreds:
-    Type: String
-              
-  oAuthMetadata:
-    Type: String
                       
   userPoolGroupList:
     Type: CommaDelimitedList
-                  
+      
   verificationBucketName:
     Type: String
                     
@@ -143,7 +137,13 @@ Parameters:
               
   dependsOn:
     Type: CommaDelimitedList
-    
+      
+  hostedUIProviderCreds:
+    Type: String
+              
+  oAuthMetadata:
+    Type: String
+                        
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
 

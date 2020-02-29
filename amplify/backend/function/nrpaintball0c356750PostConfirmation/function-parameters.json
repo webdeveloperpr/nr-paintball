@@ -7,8 +7,10 @@
     "functionName": "nrpaintball0c356750PostConfirmation",
     "parentStack": "auth",
     "triggerEnvs": "[]",
-    "triggerTemplate": "PostConfirmation.json.ejs",
+    "triggerDir": "/usr/local/lib/node_modules/@aws-amplify/cli/node_modules/amplify-category-auth/provider-utils/awscloudformation/utils/../triggers/PostConfirmation",
     "roleName": "nrpaintball0c356750PostConfirmation",
+    "triggerTemplate": "PostConfirmation.json.ejs",
+    "triggerEventPath": "PostConfirmation.event.json",
     "skipEdit": true,
     "resourceName": "nrpaintball0c356750PostConfirmation"
 }
