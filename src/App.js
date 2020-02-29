@@ -5,6 +5,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect,
   Link,
 } from 'react-router-dom';
 import './App.css';
@@ -167,7 +168,6 @@ async function deleteGameAction(id) {
 }
 
 // AUTH ACTIONS
-
 const signInAction = async () => {
   await Auth.federatedSignIn({ provider: 'Facebook' });
 };
@@ -272,6 +272,11 @@ const getUser = async () => {
   } catch (err) {
     return {}
   }
+};
+
+const HomeRoute = ({ children, fields, ...props }) => {
+  const fieldName = fields.length ? fields[0].name : ''
+  return <Route {...props} render={({ location }) => !fieldName ? null : <Redirect to={{ pathname: `/${fieldName}`, state: { from: location } }} />} />;
 };
 
 function App() {
@@ -394,10 +399,7 @@ function App() {
           className="mb-2"
           style={{ margin: '0 -15px' }}
         >
-          <Navbar.Brand
-            as={Link}
-            to={state.fields.length ? '/' + state.fields[0].name : '/'}
-          >
+          <Navbar.Brand as={Link} to={'/'}>
             NR-Paintball
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -406,8 +408,8 @@ function App() {
               {state.fields.map(field => {
                 const route = '/' + field.name;
                 return (
-                  <Nav.Link key={field.id} onClick={clickBurger} as={Link} to={route}> {field.name}
-                    Field
+                  <Nav.Link key={field.id} onClick={clickBurger} as={Link} to={route}> 
+                    {field.name} Field
                   </Nav.Link>
                 )
               })}
@@ -428,6 +430,9 @@ function App() {
           </Navbar.Collapse>
         </Navbar>
         <Switch>
+
+          <HomeRoute exact path="/" fields={state.fields} />
+
           {state.fields.map(field => {
             return (
               <Route exact path={`/${field.name}`} key={field.id}>
