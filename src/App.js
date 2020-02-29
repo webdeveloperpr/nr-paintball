@@ -395,7 +395,7 @@ function App() {
           bg="dark"
           variant="dark"
           sticky="top"
-          expand="lg"
+          expand="md"
           className="mb-2"
           style={{ margin: '0 -15px' }}
         >
@@ -408,12 +408,13 @@ function App() {
               {state.fields.map(field => {
                 const route = '/' + field.name;
                 return (
-                  <Nav.Link key={field.id} onClick={clickBurger} as={Link} to={route}> 
+                  <Nav.Link key={field.id} onClick={clickBurger} as={Link} to={route}>
                     {field.name} Field
                   </Nav.Link>
                 )
               })}
-
+            </Nav>
+            <Nav>
               {state.user.isLoggedIn ? null : <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link>}
               {state.user.isRef || state.user.isAdmin
                 ? (
@@ -426,6 +427,7 @@ function App() {
                 )
                 : null
               }
+
             </Nav>
           </Navbar.Collapse>
         </Navbar>
