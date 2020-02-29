@@ -1,7 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-// Styles
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import debounce from 'lodash.debounce';
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,6 +17,14 @@ import {
 import AdminGames from './pages/admin/Games';
 import AdminTeams from './pages/admin/Teams';
 import AdminFields from './pages/admin/Fields';
+
+import { Authenticator } from 'aws-amplify-react/lib/Auth';
+import API, { graphqlOperation } from '@aws-amplify/api';
+
+// Styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+
 
 // User Pages
 import Field from './pages/user/Field';
@@ -67,16 +73,7 @@ import {
 
 } from './graphql/subscriptions';
 
-import debounce from 'lodash.debounce';
-import { Authenticator } from 'aws-amplify-react/lib/Auth';
-import Amplify from 'aws-amplify';
-import API, { graphqlOperation } from '@aws-amplify/api';
-import PubSub from '@aws-amplify/pubsub';
 
-import awsconfig from './aws-exports';
-Amplify.configure(awsconfig);
-API.configure(awsconfig);
-PubSub.configure(awsconfig);
 
 // GET DATA
 const QUERY = 'QUERY';
