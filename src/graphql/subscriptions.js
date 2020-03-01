@@ -1,11 +1,40 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateDivision = /* GraphQL */ `
+  subscription OnCreateDivision {
+    onCreateDivision {
+      id
+      name
+    }
+  }
+`;
+export const onUpdateDivision = /* GraphQL */ `
+  subscription OnUpdateDivision {
+    onUpdateDivision {
+      id
+      name
+    }
+  }
+`;
+export const onDeleteDivision = /* GraphQL */ `
+  subscription OnDeleteDivision {
+    onDeleteDivision {
+      id
+      name
+    }
+  }
+`;
 export const onCreateTeam = /* GraphQL */ `
   subscription OnCreateTeam {
     onCreateTeam {
       id
       name
+      divisionId
+      division {
+        id
+        name
+      }
     }
   }
 `;
@@ -14,6 +43,11 @@ export const onUpdateTeam = /* GraphQL */ `
     onUpdateTeam {
       id
       name
+      divisionId
+      division {
+        id
+        name
+      }
     }
   }
 `;
@@ -22,6 +56,11 @@ export const onDeleteTeam = /* GraphQL */ `
     onDeleteTeam {
       id
       name
+      divisionId
+      division {
+        id
+        name
+      }
     }
   }
 `;
@@ -63,10 +102,20 @@ export const onCreateGame = /* GraphQL */ `
       home {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
       away {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
     }
   }
@@ -85,10 +134,20 @@ export const onUpdateGame = /* GraphQL */ `
       home {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
       away {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
     }
   }
@@ -107,10 +166,20 @@ export const onDeleteGame = /* GraphQL */ `
       home {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
       away {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
     }
   }

@@ -1,6 +1,13 @@
+type Division @model {
+  id: ID!
+  name: String
+}
+
 type Team @model {
   id: ID!
   name: String
+  divisionId: ID!
+  division: Division
 }
 
 type Field @model {

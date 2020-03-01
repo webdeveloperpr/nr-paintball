@@ -12,7 +12,6 @@ import { map, nth, __, pick } from 'ramda';
 const pickIdx = (arr, indexes) => map(nth(__, arr), indexes)
 
 const SortableItem = SortableElement((props) => <tr>{props.children}</tr>);
-
 const SortableList = SortableContainer((props) => <tbody>{props.children}</tbody>);
 
 const TeamSelectInput = (props) => {
@@ -48,11 +47,12 @@ class Games extends React.Component {
   onSortEnd = (items, swap) => ({ newIndex, oldIndex }) => {
     const [before, after] = pickIdx(items, [newIndex, oldIndex])
     swap(before, after);
-    console.log(before, after);
   }
 
   render() {
-    if (!this.props.fields.length) return 'Add a field!'
+    if (!this.props.fields.length) return 'Add a field!';
+    if (!this.props.teams.length) return 'Add 2 teams!';
+    if (!this.props.divisions.length) return 'Add a division!';
 
     return (
       <Fragment>

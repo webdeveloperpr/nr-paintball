@@ -7,16 +7,16 @@ import {
   Button,
 } from 'react-bootstrap';
 
-class Fields extends React.Component {
+class Divisions extends React.Component {
   render() {
     return (
       <>
         <Row className="mb-4">
           <Col>
-            <h2>Fields</h2>
+            <h2>Division</h2>
             <hr />
-            <Button onClick={this.props.createField}>
-              Add Field
+            <Button onClick={this.props.createDivision}>
+              Add Division
             </Button>
           </Col>
         </Row>
@@ -26,27 +26,27 @@ class Fields extends React.Component {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Field</th>
+                  <th>Division</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {this.props.fields.map((field, i) => {
+                {this.props.divisions.map((division, i) => {
                   return (
                     <tr key={i}>
                       <td>{i + 1}</td>
                       <td>
                         <Form.Control
                           type="text"
-                          value={field.name}
-                          onChange={e => this.props.updateField(field, { name: e.target.value })}
+                          value={division.name}
+                          onChange={e => this.props.updateDivision(division.id, e.target.value)}
                         >
                         </Form.Control>
                       </td>
                       <td>
                         <Button
                           size="sm"
-                          onClick={() => this.props.deleteField(field.id)}
+                          onClick={() => this.props.deleteDivision(division.id)}
                           variant="danger"
                         >
                           x
@@ -64,4 +64,4 @@ class Fields extends React.Component {
   }
 };
 
-export default Fields;
+export default Divisions;

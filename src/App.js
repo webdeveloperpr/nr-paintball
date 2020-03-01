@@ -19,9 +19,11 @@ import {
 import AdminGames from './pages/admin/Games';
 import AdminTeams from './pages/admin/Teams';
 import AdminFields from './pages/admin/Fields';
+import AdminDivision from './pages/admin/Divisions';
 
+// Auth
 import { Auth } from 'aws-amplify';
-import { withFederated } from 'aws-amplify-react';
+import Authenticate from './components/Auth';
 import API, { graphqlOperation } from '@aws-amplify/api';
 
 // Styles
@@ -48,6 +50,11 @@ import {
   createGame,
   updateGame,
   deleteGame,
+
+  // Division
+  createDivision,
+  updateDivision,
+  deleteDivision,
 } from './graphql/mutations';
 
 // Queries
@@ -55,6 +62,7 @@ import {
   listTeams,
   listGames,
   listFields,
+  listDivisions,
 } from './graphql/queries';
 
 // Subscriptions
@@ -73,6 +81,11 @@ import {
   onCreateGame,
   onUpdateGame,
   onDeleteGame,
+
+  // Division
+  onCreateDivision,
+  onUpdateDivision,
+  onDeleteDivision,
 
 } from './graphql/subscriptions';
 
@@ -94,6 +107,11 @@ const CREATE_GAME = 'CREATE_GAME';
 const UPDATE_GAME = 'UPDATE_GAME';
 const DELETE_GAME = 'DELETE_GAME';
 
+// GAME TYPES
+const CREATE_DIVISION = 'CREATE_DIVISION';
+const UPDATE_DIVISION = 'UPDATE_DIVISION';
+const DELETE_DIVISION = 'DELETE_DIVISION';
+
 // AUTH
 const AUTH_LOGIN = 'AUTH_LOGIN';
 const AUTH_LOGOUT = 'AUTH_LOGOUT';
@@ -104,23 +122,30 @@ const initialState = {
     username: '',
     email: '',
     groups: [],
-    idLoggedIn: false,
+    isLoggedIn: false,
     isRef: false,
     isAdmin: false,
   },
   teams: [],
   fields: [],
   games: [],
+  divisions: [],
 };
 
 // TEAM ACTIONS
-async function createTeamAction() {
-  const team = { name: ' ' };
+async function createTeamAction({ divisionId }) {
+  const team = {
+    name: '',
+    divisionId,
+  };
   await API.graphql(graphqlOperation(createTeam, { input: team }));
 }
 
-const updateTeamAction = (cb => dispatch => (id, name) => {
-  const team = { id, name };
+const updateTeamAction = (cb => dispatch => (oldObject, newObject) => {
+  const team = {
+    ...oldObject,
+    ...newObject,
+  };
   dispatch({ type: UPDATE_TEAM, team });
   cb(team);
 })(debounce(async (team) => await API.graphql(graphqlOperation(updateTeam, { input: team })), 2000))
@@ -135,9 +160,11 @@ async function createFieldAction() {
   await API.graphql(graphqlOperation(createField, { input: field }));
 }
 
-const updateFieldAction = (cb => dispatch => (id, name) => {
-  const field = { id, name };
-  console.log(field);
+const updateFieldAction = (cb => dispatch => (oldObject, newObject) => {
+  const field = {
+    ...oldObject,
+    ...newObject,
+  };
   dispatch({ type: UPDATE_FIELD, field });
   cb(field);
 })(debounce(async (field) => await API.graphql(graphqlOperation(updateField, { input: field })), 1500))
@@ -168,16 +195,33 @@ async function deleteGameAction(id) {
   await API.graphql(graphqlOperation(deleteGame, { input: { id } }));
 }
 
+// DIVISION ACTIONS
+async function createDivisionAction() {
+  const division = { name: ' ' };
+  await API.graphql(graphqlOperation(createDivision, { input: division }));
+}
+
+const updateDivisionAction = (cb => dispatch => (id, name) => {
+  const division = { id, name };
+  dispatch({ type: UPDATE_DIVISION, division });
+  cb(division);
+})(debounce(async (division) => await API.graphql(graphqlOperation(updateDivision, { input: division })), 2000))
+
+async function deleteDivisionAction(id) {
+  await API.graphql(graphqlOperation(deleteDivision, { input: { id } }));
+}
+
 // Reducers
 const reducer = (state, action) => {
   switch (action.type) {
     case QUERY:
       return {
         ...state,
-        user: action.user,
+        user: { ...initialState.user },
         teams: action.teams,
         fields: action.fields,
         games: action.games,
+        divisions: action.divisions,
       };
     // AUTH
     case AUTH_LOGIN:
@@ -241,6 +285,24 @@ const reducer = (state, action) => {
         games: [...state.games].filter(({ id }) => id !== action.game.id),
       }
 
+    // DIVISON CASE
+    case CREATE_DIVISION:
+      return {
+        ...state,
+        divisions: [...state.divisions, action.division]
+      }
+    case UPDATE_DIVISION:
+      return {
+        ...state,
+        divisions: [...state.divisions].map(division => division.id === action.division.id ? action.division : division)
+      }
+    case DELETE_DIVISION:
+      return {
+        ...state,
+        divisions: [...state.divisions].filter(({ id }) => id !== action.division.id),
+      }
+
+
     default:
       return state;
   }
@@ -275,16 +337,6 @@ const HomeRoute = ({ children, fields, ...props }) => {
   return <Route {...props} render={({ location }) => !fieldName ? null : <Redirect to={{ pathname: `/${fieldName}`, state: { from: location } }} />} />;
 };
 
-
-const SignIn = withFederated((props) => (
-  <div>
-    <button onClick={props.facebookSignIn}>
-      Sign In!
-    </button>
-  </div>
-));
-
-
 function App() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -293,14 +345,14 @@ function App() {
       const teamData = await API.graphql(graphqlOperation(listTeams));
       const fieldData = await API.graphql(graphqlOperation(listFields));
       const gameData = await API.graphql(graphqlOperation(listGames));
-      const user = await getUser();
+      const divisionData = await API.graphql(graphqlOperation(listDivisions));
 
       dispatch({
         type: QUERY,
-        user: user,
         teams: teamData.data.listTeams.items,
         fields: fieldData.data.listFields.items,
         games: gameData.data.listGames.items,
+        divisions: divisionData.data.listDivisions.items,
       });
     }
     getData();
@@ -386,10 +438,40 @@ function App() {
         }),
     ];
 
+    const divisionSubscriptions = [
+      API
+        .graphql(graphqlOperation(onCreateDivision))
+        .subscribe({
+          next: (eventData) => {
+            const division = eventData.value.data.onCreateDivision;
+            dispatch({ type: CREATE_DIVISION, division });
+          }
+        }),
+      API
+        .graphql(graphqlOperation(onDeleteDivision))
+        .subscribe({
+          next: (eventData) => {
+            const division = eventData.value.data.onDeleteDivision;
+            dispatch({ type: DELETE_DIVISION, division });
+          }
+        }),
+      API
+        .graphql(graphqlOperation(onUpdateDivision))
+        .subscribe({
+          next: (eventData) => {
+            const division = eventData.value.data.onUpdateDivision;
+            dispatch({ type: UPDATE_DIVISION, division });
+          }
+        }),
+    ];
+
     return () => {
-      teamSubscriptions.forEach(sub => sub.unsubscribe());
-      fieldSubscriptions.forEach(sub => sub.unsubscribe());
-      gameSubscriptions.forEach(sub => sub.unsubscribe());
+      [
+        teamSubscriptions,
+        fieldSubscriptions,
+        gameSubscriptions,
+        divisionSubscriptions,
+      ].forEach(group => group.forEach(sub => sub.unsubscribe()));
     }
   }, []);
 
@@ -428,6 +510,7 @@ function App() {
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-fields">Add Field</Nav.Link>
+                    <Nav.Link onClick={clickBurger} as={Link} to="/add-divisions">Add Divisions</Nav.Link>
                     <Nav.Link onClick={() => Auth.signOut().then(data => console.log(data)).catch(err => console.log(err))} as={Link} to="/">Sign Out</Nav.Link>
                   </>
                 )
@@ -460,6 +543,7 @@ function App() {
               games={state.games}
               teams={state.teams}
               fields={state.fields}
+              divisions={state.divisions}
             />
           </Route>
 
@@ -472,8 +556,18 @@ function App() {
             />
           </Route>
 
+          <Route exact path="/add-divisions">
+            <AdminDivision
+              createDivision={createDivisionAction}
+              updateDivision={updateDivisionAction(dispatch)}
+              deleteDivision={deleteDivisionAction}
+              divisions={state.divisions}
+            />
+          </Route>
+
           <Route exact path="/add-teams">
             <AdminTeams
+              divisions={state.divisions}
               createTeam={createTeamAction}
               updateTeam={updateTeamAction(dispatch)}
               deleteTeam={deleteTeamAction}
@@ -482,7 +576,7 @@ function App() {
           </Route>
 
           <Route exact path="/sign-in">
-            <SignIn federated={{ facebook_app_id: '1362689763902038' }} />
+            <Authenticate />
           </Route>
         </Switch>
       </Router>

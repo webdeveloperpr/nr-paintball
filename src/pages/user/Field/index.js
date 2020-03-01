@@ -4,6 +4,7 @@ import {
   Row,
   Table,
 } from 'react-bootstrap';
+import { pathOr } from 'ramda';
 
 class Field extends React.Component {
 
@@ -15,6 +16,7 @@ class Field extends React.Component {
   };
 
   render() {
+    if (!this.props.games.length) return <p>Add some games!</p>
     return (
       <>
         <Row>
@@ -40,8 +42,8 @@ class Field extends React.Component {
                   return (
                     <tr key={i}>
                       <td>{i + 1}</td>
-                      <td>{game.home.name}</td>
-                      <td>{game.away.name}</td>
+                      <td>{pathOr('', ['home', 'name'], game)}</td>
+                      <td>{pathOr('', ['away', 'name'], game)}</td>
                       <td>{this.getStatus(i + 1)}</td>
                     </tr>
                   )

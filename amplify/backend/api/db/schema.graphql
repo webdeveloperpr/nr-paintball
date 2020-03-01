@@ -1,13 +1,24 @@
-type Team @model {
+# The teams division
+type Division @model {
   id: ID!
   name: String
 }
 
+# The team
+type Team @model {
+  id: ID!
+  name: String
+  divisionId: ID!
+  division: Division @connection(fields: ["divisionId"])
+}
+
+# The paintball field
 type Field @model {
   id: ID!
   name: String
 }
 
+# The paintball field games
 type Game @model {
   id: ID!
   homeId: ID!

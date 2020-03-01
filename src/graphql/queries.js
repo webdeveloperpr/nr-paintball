@@ -1,11 +1,39 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getDivision = /* GraphQL */ `
+  query GetDivision($id: ID!) {
+    getDivision(id: $id) {
+      id
+      name
+    }
+  }
+`;
+export const listDivisions = /* GraphQL */ `
+  query ListDivisions(
+    $filter: ModelDivisionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listDivisions(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+      }
+      nextToken
+    }
+  }
+`;
 export const getTeam = /* GraphQL */ `
   query GetTeam($id: ID!) {
     getTeam(id: $id) {
       id
       name
+      divisionId
+      division {
+        id
+        name
+      }
     }
   }
 `;
@@ -19,6 +47,11 @@ export const listTeams = /* GraphQL */ `
       items {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
       nextToken
     }
@@ -61,10 +94,20 @@ export const getGame = /* GraphQL */ `
       home {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
       away {
         id
         name
+        divisionId
+        division {
+          id
+          name
+        }
       }
     }
   }
@@ -88,10 +131,12 @@ export const listGames = /* GraphQL */ `
         home {
           id
           name
+          divisionId
         }
         away {
           id
           name
+          divisionId
         }
       }
       nextToken
