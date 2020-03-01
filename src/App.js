@@ -20,12 +20,6 @@ import AdminGames from './pages/admin/Games';
 import AdminTeams from './pages/admin/Teams';
 import AdminFields from './pages/admin/Fields';
 import AdminDivision from './pages/admin/Divisions';
-
-// Auth
-import { Auth } from 'aws-amplify';
-import Authenticate from './components/Auth';
-import API, { graphqlOperation } from '@aws-amplify/api';
-
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -88,6 +82,19 @@ import {
   onDeleteDivision,
 
 } from './graphql/subscriptions';
+
+// Auth
+import { Auth } from 'aws-amplify';
+import Authenticate from './components/Auth';
+import API, { graphqlOperation } from '@aws-amplify/api';
+
+import Amplify from 'aws-amplify';
+import PubSub from '@aws-amplify/pubsub';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
+API.configure(awsconfig);
+PubSub.configure(awsconfig);
 
 // GET DATA
 const QUERY = 'QUERY';

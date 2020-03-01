@@ -4,15 +4,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-//  Amplify config
-import Amplify from 'aws-amplify';
-import PubSub from '@aws-amplify/pubsub';
-import API from '@aws-amplify/api';
-import awsconfig from './aws-exports';
-Amplify.configure(awsconfig);
-API.configure(awsconfig);
-PubSub.configure(awsconfig);
-
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
