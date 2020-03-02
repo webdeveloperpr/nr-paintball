@@ -1,14 +1,11 @@
 import React from 'react';
-import { Authenticator } from 'aws-amplify-react';
-import Amplify from 'aws-amplify';
+import Authenticator from 'aws-amplify-react/lib/Auth/Authenticator';
 import awsconfig from '../../aws-exports';
 
-Amplify.configure(awsconfig);
-
-const LoginForm = (props) => {
+const LoginForm = props => {
   return <Authenticator
-    // onStateChange={(authState) => console.log('Authentication changed!', authState)}
-    federated={{ facebook_app_id: 1362689763902038 }}
+    // onStateChange={(...props) => console.log('Authentication changed!', ...props)}
+    federated={props.federated}
     amplifyConfig={awsconfig}
     errorMessage={(err) => console.log(err)}
   >

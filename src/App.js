@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { pathOr, includes } from 'ramda';
+import { pathOr } from 'ramda';
 import debounce from 'lodash.debounce';
 import {
   BrowserRouter as Router,
@@ -126,12 +126,8 @@ const AUTH_LOGOUT = 'AUTH_LOGOUT';
 const initialState = {
   user: {
     id: '',
-    username: '',
     email: '',
-    groups: [],
     isLoggedIn: false,
-    isRef: false,
-    isAdmin: false,
   },
   teams: [],
   fields: [],
@@ -221,10 +217,12 @@ async function deleteDivisionAction(id) {
 // Reducers
 const reducer = (state, action) => {
   switch (action.type) {
+
     case QUERY:
+      console.log('query', action.user)
       return {
         ...state,
-        user: { ...initialState.user },
+        user: action.user,
         teams: action.teams,
         fields: action.fields,
         games: action.games,
@@ -234,7 +232,7 @@ const reducer = (state, action) => {
     case AUTH_LOGIN:
       return {
         ...state,
-        auth: action.auth,
+        user: action.user,
       }
     case AUTH_LOGOUT:
       return {
@@ -325,17 +323,20 @@ const clickBurger = () => {
 const getUser = async () => {
   try {
     const user = await Auth.currentAuthenticatedUser();
+
     return {
       id: pathOr('', ['id'], user),
-      username: pathOr('', ['username'], user),
-      email: pathOr('', ['attributes', 'email'], user),
-      groups: pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user),
-      isLoggedIn: !!pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user).length,
-      isRef: includes('refs', pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user)),
-      isAdmin: includes('admin', pathOr([], ['signInUserSession', 'idToken', 'payload', 'cognito:groups'], user)),
+      name: pathOr('', ['name'], user),
+      email: pathOr('', ['email'], user),
+      isLoggedIn: !!pathOr('', ['email'], user),
     };
   } catch (err) {
-    return {}
+    return {
+      id: '',
+      name: '',
+      email: '',
+      isLoggedIn: false,
+    }
   }
 };
 
@@ -344,18 +345,20 @@ const HomeRoute = ({ children, fields, ...props }) => {
   return <Route {...props} render={({ location }) => !fieldName ? null : <Redirect to={{ pathname: `/${fieldName}`, state: { from: location } }} />} />;
 };
 
-function App() {
-
+function App(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
   useEffect(() => {
     async function getData() {
       const teamData = await API.graphql(graphqlOperation(listTeams));
       const fieldData = await API.graphql(graphqlOperation(listFields));
       const gameData = await API.graphql(graphqlOperation(listGames));
       const divisionData = await API.graphql(graphqlOperation(listDivisions));
+      const user = await getUser();
 
       dispatch({
         type: QUERY,
+        user: user,
         teams: teamData.data.listTeams.items,
         fields: fieldData.data.listFields.items,
         games: gameData.data.listGames.items,
@@ -482,7 +485,6 @@ function App() {
     }
   }, []);
 
-
   return (
     <Container fluid>
       <Router>
@@ -510,9 +512,10 @@ function App() {
               })}
             </Nav>
             <Nav>
-              {state.user.isLoggedIn ? null : <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link>}
-              {state.user.isRef || state.user.isAdmin
-                ? (
+              {/* <Nav.Link onClick={clickBurger} as={Link} to="/sign-in">Sign In</Nav.Link> */}
+              {!state.user.isLoggedIn
+                ? null
+                : (
                   <>
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-games">Add Game</Nav.Link>
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-teams">Add Team</Nav.Link>
@@ -520,10 +523,7 @@ function App() {
                     <Nav.Link onClick={clickBurger} as={Link} to="/add-divisions">Add Divisions</Nav.Link>
                     <Nav.Link onClick={() => Auth.signOut().then(data => console.log(data)).catch(err => console.log(err))} as={Link} to="/">Sign Out</Nav.Link>
                   </>
-                )
-                : null
-              }
-
+                )}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -583,7 +583,12 @@ function App() {
           </Route>
 
           <Route exact path="/sign-in">
-            <Authenticate />
+            <Authenticate
+              federated={{
+                facebook_app_id: process.env.REACT_APP_FACEBOOK_APP_ID,
+              }}
+            />
+
           </Route>
         </Switch>
       </Router>
